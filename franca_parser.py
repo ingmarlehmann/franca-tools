@@ -33,7 +33,8 @@ class FidlParser(object):
         self.parser.parse(input=text,lexer=self.lexer)
 
     def p_interface(self, p):
-        '''interface : INTERFACE ID LBRACE interface_member_list RBRACE'''
+        '''interface : INTERFACE ID LBRACE interface_member_list RBRACE
+                        | FRANCA_COMMENT INTERFACE ID LBRACE interface_member_list RBRACE'''
         print("found interface")
         p[0] = p[0]
 
@@ -47,7 +48,8 @@ class FidlParser(object):
         p[0] = p[1]
 
     def p_enumeration(self, p):
-        'enumeration : ENUMERATION ID LBRACE enumeration_value RBRACE'
+        '''enumeration : ENUMERATION ID LBRACE enumeration_value RBRACE
+                        | FRANCA_COMMENT ENUMERATION ID LBRACE enumeration_value RBRACE'''
         print("found enumeration!")
         p[0] = p[0]
 
@@ -80,7 +82,8 @@ class FidlParser(object):
         p[0] = p[0]
 
     def p_method(self, p):
-        '''method : METHOD ID LBRACE method_body RBRACE'''
+        '''method : METHOD ID LBRACE method_body RBRACE
+                    | FRANCA_COMMENT METHOD ID LBRACE method_body RBRACE'''
         print("found method")
         p[0] = p[0]
 
