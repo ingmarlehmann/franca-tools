@@ -11,6 +11,8 @@
 # License: BSD
 #------------------------------------------------------------------------------
 import sys
+
+import franca_ast
 from ply import yacc
 from franca_lexer import FidlLexer
 
@@ -48,19 +50,72 @@ class FidlParser(object):
         p[0] = p[1]
 
     def p_enumeration(self, p):
-        '''enumeration : ENUMERATION ID LBRACE enumeration_value RBRACE
-                        | FRANCA_COMMENT ENUMERATION ID LBRACE enumeration_value RBRACE'''
+        '''enumeration : ENUMERATION ID LBRACE enumeration_value_list RBRACE
+                        | FRANCA_COMMENT ENUMERATION ID LBRACE enumeration_value_list RBRACE'''
         print("found enumeration!")
+        p[0] = p[0]
+
+    def p_enumeration_value_list(self, p):
+        '''enumeration_value_list : enumeration_value
+                                | enumeration_value enumeration_value_list'''
+            
+        print("found enumeration_value_list")    
         p[0] = p[0]
 
     def p_enumeration_value(self, p):
         '''enumeration_value : ID EQUALS INT_CONST_DEC
-                            | ID EQUALS INT_CONST_DEC enumeration_value
-                            | ID 
-                            | ID enumeration_value
-            '''
-        print("found enumeration_value")    
+                            | FRANCA_COMMENT ID EQUALS INT_CONST_DEC
+                            | ID
+                            | FRANCA_COMMENT ID'''
+        print("found enumeration_value")
         p[0] = p[0]
+
+
+    def p_method(self, p):
+        '''method : METHOD identifier LBRACE method_body RBRACE
+                    | FRANCA_COMMENT METHOD ID LBRACE method_body RBRACE'''
+        if len(p) == 6:
+            p[0] = franca_ast.Method(p[2], p[4])
+        elif len(p) == 7:
+            p[0] = franca_ast.Method(p[3], p[5])
+        else:
+            print("method: unhandled argument number: " + str(len(p)))
+
+        #p[0].show()
+
+    def p_method_body(self, p):
+        '''method_body : method_in_params
+                        | method_out_params
+                        | method_in_params method_out_params
+                        | method_out_params method_in_params'''
+        #print("found method_body")                
+        p[0] = p[0]
+
+    def p_method_in_params(self, p):
+        '''method_in_params : IN LBRACE method_argument_list RBRACE'''
+        #print("found method_in_params" + str(p[3].children()))
+        #print("found method_in_params")
+        p[0] = p[0]
+
+    def p_method_out_params(self, p):
+        '''method_out_params : OUT LBRACE method_argument_list RBRACE'''
+        #print("found method_out_params")
+        p[0] = p[0]
+
+    def p_method_argument_list(self, p):
+        '''method_argument_list : method_argument
+                                | method_argument_list method_argument'''
+        if len(p) == 3:
+            p[1].args.append(p[2])
+            p[0] = p[1]
+        else:
+            p[0] = franca_ast.MethodArgumentList([p[1]])
+       
+        p[0].show()
+
+    def p_method_argument(self, p):
+        '''method_argument : typename identifier'''
+        p[0] = franca_ast.MethodArgument(p[1], p[2])
 
     def p_typename(self, p):
         '''typename : INT64
@@ -78,38 +133,11 @@ class FidlParser(object):
                     | DOUBLE
                     | BYTEBUFFER
         '''
-        print("found typename")
-        p[0] = p[0]
-
-    def p_method(self, p):
-        '''method : METHOD ID LBRACE method_body RBRACE
-                    | FRANCA_COMMENT METHOD ID LBRACE method_body RBRACE'''
-        print("found method")
-        p[0] = p[0]
-
-    def p_method_body(self, p):
-        '''method_body : method_in_params
-                        | method_out_params
-                        | method_in_params method_out_params
-                        | method_out_params method_in_params'''
-        print("found method_body")                
-        p[0] = p[0]
-
-    def p_method_in_params(self, p):
-        '''method_in_params : IN LBRACE method_param_list RBRACE'''
-        print("found method_in_params")
-        p[0] = p[0]
-
-    def p_method_out_params(self, p):
-        '''method_out_params : OUT LBRACE method_param_list RBRACE'''
-        print("found method_out_params")
-        p[0] = p[0]
-
-    def p_method_param_list(self, p):
-        '''method_param_list : typename ID 
-                                | typename ID method_param_list'''
-        print("found method_param_list")                                
-        p[0] = p[0]
+        p[0] = franca_ast.Typename(p[1])
+    
+    def p_identifier(self, p):
+        '''identifier : ID'''
+        p[0] = franca_ast.ID(p[1])
 
     def p_error(self, p):
         print("Syntax error in input!" + str(p))
