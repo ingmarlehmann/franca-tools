@@ -2,7 +2,7 @@
 # fidlparser: fidl_parser.py
 #
 # FidlParser class: Parser for Franca IDL (*.fidl).
-#                   Builds and AST.
+#                   Builds an AST to be used in other tools.
 # 
 # This code is *heavlily* inspired by 'pycparser' by Eli Bendersky 
 # (https://github.com/eliben/pycparser/)
@@ -70,37 +70,45 @@ class FidlParser(object):
         print("found enumeration_value")
         p[0] = p[0]
 
+    def p_franca_comment(self, p):
+        '''franca_comment : FRANCA_COMMENT'''
+        p[0] = franca_ast.FrancaComment(p[1])
 
     def p_method(self, p):
         '''method : METHOD identifier LBRACE method_body RBRACE
-                    | FRANCA_COMMENT METHOD ID LBRACE method_body RBRACE'''
+                    | franca_comment METHOD identifier LBRACE method_body RBRACE'''
         if len(p) == 6:
-            p[0] = franca_ast.Method(p[2], p[4])
+            p[0] = franca_ast.Method(p[2], None, p[4])
         elif len(p) == 7:
-            p[0] = franca_ast.Method(p[3], p[5])
-        else:
-            print("method: unhandled argument number: " + str(len(p)))
+            p[0] = franca_ast.Method(p[3], p[1], p[5])
 
-        #p[0].show()
+        p[0].show()    
 
-    def p_method_body(self, p):
-        '''method_body : method_in_params
-                        | method_out_params
-                        | method_in_params method_out_params
-                        | method_out_params method_in_params'''
-        #print("found method_body")                
-        p[0] = p[0]
+    def p_method_body_1(self, p):
+        '''method_body : method_in_arguments
+                        | method_in_arguments method_out_arguments'''
+        if len(p) == 2:
+            p[0] = franca_ast.MethodBody(p[1], None)
+        elif len(p) == 3:    
+            p[0] = franca_ast.MethodBody(p[1], p[2])
 
-    def p_method_in_params(self, p):
-        '''method_in_params : IN LBRACE method_argument_list RBRACE'''
-        #print("found method_in_params" + str(p[3].children()))
-        #print("found method_in_params")
-        p[0] = p[0]
+    def p_method_body_2(self, p):
+        '''method_body : method_out_arguments
+                        | method_out_arguments method_in_arguments'''
+        if len(p) == 2:
+            p[0] = franca_ast.MethodBody(None, p[1])
+        elif len(p) == 3:    
+            p[0] = franca_ast.MethodBody(p[2], p[1])
+    
+        p[0].show()
 
-    def p_method_out_params(self, p):
-        '''method_out_params : OUT LBRACE method_argument_list RBRACE'''
-        #print("found method_out_params")
-        p[0] = p[0]
+    def p_method_in_arguments(self, p):
+        '''method_in_arguments : IN LBRACE method_argument_list RBRACE'''
+        p[0] = franca_ast.MethodInArguments(p[3])
+
+    def p_method_out_arguments(self, p):
+        '''method_out_arguments : OUT LBRACE method_argument_list RBRACE'''
+        p[0] = franca_ast.MethodOutArguments(p[3])
 
     def p_method_argument_list(self, p):
         '''method_argument_list : method_argument
@@ -110,8 +118,6 @@ class FidlParser(object):
             p[0] = p[1]
         else:
             p[0] = franca_ast.MethodArgumentList([p[1]])
-       
-        p[0].show()
 
     def p_method_argument(self, p):
         '''method_argument : typename identifier'''
