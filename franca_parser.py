@@ -32,13 +32,18 @@ class FidlParser(object):
     def parse(self, text):
         self.parser.parse(input=text,lexer=self.lexer)
 
-    def p_any(self, p):
-        '''any : enumeration 
-                | enumeration any
-                | method
-                | method any'''
+    def p_interface(self, p):
+        '''interface : INTERFACE ID LBRACE interface_member_list RBRACE'''
+        print("found interface")
+        p[0] = p[0]
 
-        print("found any")
+    def p_interface_member_list(self, p):
+        '''interface_member_list : enumeration 
+                | enumeration interface_member_list
+                | method
+                | method interface_member_list'''
+
+        print("found interface")
         p[0] = p[1]
 
     def p_enumeration(self, p):
