@@ -88,7 +88,7 @@ class Method(Node):
         if self.body is not None: nodelist.append(("body", self.body))
         return tuple(nodelist)
 
-    attr_names = ('name', 'comment', 'body',)
+    attr_names = ()
 
 class MethodBody(Node):
     def __init__(self, in_args, out_args):
@@ -101,7 +101,7 @@ class MethodBody(Node):
         if self.out_args is not None: nodelist.append(("out_args", self.out_args))
         return tuple(nodelist)
     
-    attr_names = ('in_args','out_args',)
+    attr_names = ()
 
 class MethodArgument(Node):
     def __init__(self, type, name):
@@ -114,7 +114,7 @@ class MethodArgument(Node):
         if self.type is not None: nodelist.append(("type", self.type))
         return tuple(nodelist)
     
-    attr_names = ('type', 'name',)
+    attr_names = ()
 
 class MethodArgumentList(Node):
     def __init__(self, args):
@@ -126,7 +126,7 @@ class MethodArgumentList(Node):
             nodelist.append(("args[%d]" % i, child))
         return tuple(nodelist)
 
-    attr_names = ('args',)
+    attr_names = ()
 
 class MethodOutArguments(Node):
     def __init__(self, args):
@@ -137,7 +137,7 @@ class MethodOutArguments(Node):
         if self.args is not None: nodelist.append(("args", self.args))
         return tuple(nodelist)
 
-    attr_names = ('args',)
+    attr_names = ()
 
 class MethodInArguments(Node):
     def __init__(self, args):
@@ -148,7 +148,7 @@ class MethodInArguments(Node):
         if self.args is not None: nodelist.append(("args", self.args))
         return tuple(nodelist)
 
-    attr_names = ('args',)
+    attr_names = ()
 
 class Typename(Node):
     def __init__(self, typename):
