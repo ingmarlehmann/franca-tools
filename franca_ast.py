@@ -150,6 +150,26 @@ class MethodInArguments(Node):
 
     attr_names = ()
 
+class PackageStatement(Node):
+    def __init__(self, package_identifier):
+        self.package_identifier = package_identifier
+
+    def children(self):
+        nodelist = []
+        if self.package_identifier is not None: nodelist.append(("package_identifier", self.package_identifier))
+        return tuple(nodelist)
+
+    attr_names = ('package_identifier',)
+
+class PackageIdentifier(Node):
+    def __init__(self, package_identifier):
+        self.package_identifier = package_identifier
+
+    def children(self):
+        return tuple()
+
+    attr_names = ('package_identifier',)
+
 class Typename(Node):
     def __init__(self, typename):
         self.typename = typename

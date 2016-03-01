@@ -179,7 +179,10 @@ class FidlLexer(object):
        
         t_STRING_LITERAL = string_literal 
       
-        t_C_COMMENT = r'(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*)' # C and C++ style comments, single and multi line.
+        def t_C_COMMENT(self, t):
+            r'(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*)' # C and C++ style comments, single and multi line.
+            pass # discard c and c++ style comments
+
         t_FRANCA_COMMENT = r'\<\*{2,}([^*]|[\r\n]|(\*+([^*\>]|[\r\n])))*\*{2,}\>'
         
         def t_NEWLINE(self,t):

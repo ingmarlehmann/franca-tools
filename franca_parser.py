@@ -34,6 +34,30 @@ class FidlParser(object):
     def parse(self, text):
         self.parser.parse(input=text,lexer=self.lexer)
 
+    def p_document(self, p):
+        '''document : package_statement import_statement_list document_root_object_list
+                    | package_statement document_root_object_list'''
+        p[0] = p[0]
+
+    def p_document_root_object_list(self, p):
+        '''document_root_object_list : document_root_object 
+                                    | document_root_object document_root_object_list'''
+        p[0] = p[0]
+
+    def p_document_root_object(self, p):
+        '''document_root_object : interface
+                                | enumeration'''
+        p[0] = p[0]
+   
+    def p_import_statement_list(self, p):
+        '''import_statement_list : import_statement
+                                | import_statement import_statement_list'''
+        p[0] = p[0]
+    
+    def p_import_statement(self, p):
+        '''import_statement : IMPORT package_identifier FROM STRING_LITERAL'''
+        p[0] = p[0]
+
     def p_interface(self, p):
         '''interface : INTERFACE ID LBRACE interface_member_list RBRACE
                         | FRANCA_COMMENT INTERFACE ID LBRACE interface_member_list RBRACE'''
@@ -82,8 +106,6 @@ class FidlParser(object):
         elif len(p) == 7:
             p[0] = franca_ast.Method(p[3], p[1], p[5])
 
-        p[0].show()    
-
     def p_method_body_1(self, p):
         '''method_body : method_in_arguments
                         | method_in_arguments method_out_arguments'''
@@ -99,8 +121,6 @@ class FidlParser(object):
             p[0] = franca_ast.MethodBody(None, p[1])
         elif len(p) == 3:    
             p[0] = franca_ast.MethodBody(p[2], p[1])
-    
-        p[0].show()
 
     def p_method_in_arguments(self, p):
         '''method_in_arguments : IN LBRACE method_argument_list RBRACE'''
@@ -144,6 +164,21 @@ class FidlParser(object):
     def p_identifier(self, p):
         '''identifier : ID'''
         p[0] = franca_ast.ID(p[1])
+
+    def p_package_statement(self, p):
+        '''package_statement : PACKAGE package_identifier'''
+        p[0] = franca_ast.PackageStatement(p[2])
+        p[0].show()
+    
+    def p_package_identifier(self, p):
+        '''package_identifier : ID 
+                            | package_identifier PERIOD ID'''
+        if len(p) == 4:
+            p[1].package_identifier += p[2]
+            p[1].package_identifier += p[3]
+            p[0] = p[1]
+        else:
+            p[0] = franca_ast.PackageIdentifier(str(p[1]))
 
     def p_error(self, p):
         print("Syntax error in input!" + str(p))
