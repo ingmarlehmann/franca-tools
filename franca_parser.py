@@ -55,12 +55,12 @@ class FidlParser(object):
         p[0] = p[0]
     
     def p_import_statement(self, p):
-        '''import_statement : IMPORT package_identifier FROM STRING_LITERAL'''
+        '''import_statement : IMPORT import_identifier FROM STRING_LITERAL'''
         p[0] = p[0]
 
     def p_interface(self, p):
-        '''interface : INTERFACE ID LBRACE interface_member_list RBRACE
-                        | FRANCA_COMMENT INTERFACE ID LBRACE interface_member_list RBRACE'''
+        '''interface : INTERFACE ID LBRACE version interface_member_list RBRACE
+                        | FRANCA_COMMENT INTERFACE ID LBRACE version interface_member_list RBRACE'''
         print("found interface")
         p[0] = p[0]
 
@@ -165,10 +165,24 @@ class FidlParser(object):
         '''identifier : ID'''
         p[0] = franca_ast.ID(p[1])
 
+    def p_import_identifier_1(self, p):
+        '''import_identifier : TIMES'''
+        p[0] = franca_ast.ImportIdentifier(p[1])
+
+    def p_import_identifier_2(self, p):
+        '''import_identifier : ID 
+                            | import_identifier PERIOD ID
+                            | import_identifier PERIOD TIMES'''
+        if len(p) == 4:
+            p[1].import_identifier += p[2]
+            p[1].import_identifier += p[3]
+            p[0] = p[1]
+        else:
+            p[0] = franca_ast.ImportIdentifier(p[1])
+    
     def p_package_statement(self, p):
         '''package_statement : PACKAGE package_identifier'''
         p[0] = franca_ast.PackageStatement(p[2])
-        p[0].show()
     
     def p_package_identifier(self, p):
         '''package_identifier : ID 
@@ -179,6 +193,19 @@ class FidlParser(object):
             p[0] = p[1]
         else:
             p[0] = franca_ast.PackageIdentifier(str(p[1]))
+
+    # LexToken(VERSION,'version',9,790)
+    # LexToken(LBRACE,'{',9,798)
+    # LexToken(MAJOR,'major',10,809)
+    # LexToken(INT_CONST_OCT,'0',10,815)
+    # LexToken(MINOR,'minor',11,826)
+    # LexToken(INT_CONST_OCT,'0',11,832)
+    # LexToken(RBRACE,'}',12,839)
+
+    def p_version(self, p):
+        '''version : VERSION LBRACE MAJOR INT_CONST_OCT MINOR INT_CONST_OCT RBRACE'''
+        p[0] = franca_ast.Version(p[4], p[6])
+        p[0].show()
 
     def p_error(self, p):
         print("Syntax error in input!" + str(p))

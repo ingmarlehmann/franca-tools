@@ -66,6 +66,15 @@ class FrancaComment(Node):
 
     attr_names = ('comment',)
 
+class ImportIdentifier(Node):
+    def __init__(self, import_identifier):
+        self.import_identifier = import_identifier
+
+    def children(self):
+        return tuple()
+
+    attr_names = ('import_identifier',)
+
 class ID(Node):
     def __init__(self, id):
         self.id = id
@@ -178,3 +187,14 @@ class Typename(Node):
         return tuple()
 
     attr_names = ('typename',)
+
+class Version(Node):
+    def __init__(self, major, minor):
+        self.major = major
+        self.minor = minor
+
+    def children(self):
+        return tuple()
+
+    attr_names = ('major','minor',)
+
