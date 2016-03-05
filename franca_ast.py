@@ -66,6 +66,48 @@ class Constant(Node):
 
     attr_names = ('value',)
 
+class Enum(Node):
+    def __init__(self, name, values, comment=None):
+        self.name = name
+        self.values = values
+        self.comment = comment
+    
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.values is not None: nodelist.append(("values", self.values))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+
+    attr_names = ()
+
+class Enumerator(Node):
+    def __init__(self, name, value=None, comment=None):
+        self.name = name
+        self.value = value
+        self.comment = comment
+
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.value is not None: nodelist.append(("value", self.value))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+
+    attr_names = ()
+
+class EnumeratorList(Node):
+    def __init__(self, enumerators):
+        self.enumerators = enumerators
+
+    def children(self):
+        nodelist = []
+        for i, child in enumerate(self.enumerators or []):
+            nodelist.append(("enumerators[%d]" % i, child))
+        return tuple(nodelist)
+
+    attr_names = ()
+
 class FrancaComment(Node):
     def __init__(self, comment):
         self.comment = comment
@@ -75,15 +117,6 @@ class FrancaComment(Node):
 
     attr_names = ('comment',)
 
-class ImportIdentifier(Node):
-    def __init__(self, import_identifier):
-        self.import_identifier = import_identifier
-
-    def children(self):
-        return tuple()
-
-    attr_names = ('import_identifier',)
-
 class ID(Node):
     def __init__(self, id):
         self.id = id
@@ -92,6 +125,24 @@ class ID(Node):
         return tuple()
 
     attr_names = ('id',)
+
+class IntegerConstant(Node):
+    def __init__(self, value):
+        self.value = value
+
+    def children(self):
+        return tuple()
+
+    attr_names = ('value',)
+
+class ImportIdentifier(Node):
+    def __init__(self, import_identifier):
+        self.import_identifier = import_identifier
+
+    def children(self):
+        return tuple()
+
+    attr_names = ('import_identifier',)
 
 class Method(Node):
     def __init__(self, name, comment, body):

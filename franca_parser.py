@@ -11,15 +11,11 @@
 # License: BSD
 #------------------------------------------------------------------------------
 import sys
-
+import argparse
 import franca_ast
+
 from ply import yacc
 from franca_lexer import FidlLexer
-
-input_text = '' 
- 
-for line in sys.stdin: 
-    input_text += line 
 
 class FidlParser(object):
     def __init__(self):
@@ -32,7 +28,7 @@ class FidlParser(object):
         print error
 
     def parse(self, text):
-        self.parser.parse(input=text,lexer=self.lexer)
+        return self.parser.parse(input=text,lexer=self.lexer)
 
     def p_document(self, p):
         '''document : package_statement import_statement_list document_root_object_list
@@ -59,9 +55,8 @@ class FidlParser(object):
         p[0] = p[0]
 
     def p_interface(self, p):
-        '''interface : INTERFACE ID LBRACE version interface_member_list RBRACE
-                        | FRANCA_COMMENT INTERFACE ID LBRACE version interface_member_list RBRACE'''
-        print("found interface")
+        '''interface : INTERFACE identifier LBRACE version interface_member_list RBRACE
+                        | franca_comment INTERFACE identifier LBRACE version interface_member_list RBRACE'''
         p[0] = p[0]
 
     def p_interface_member_list(self, p):
@@ -70,29 +65,41 @@ class FidlParser(object):
                 | method
                 | method interface_member_list'''
 
-        print("found interface")
         p[0] = p[1]
 
     def p_enumeration(self, p):
-        '''enumeration : ENUMERATION ID LBRACE enumeration_value_list RBRACE
-                        | FRANCA_COMMENT ENUMERATION ID LBRACE enumeration_value_list RBRACE'''
-        print("found enumeration!")
-        p[0] = p[0]
+        '''enumeration : ENUMERATION identifier LBRACE enumeration_value_list RBRACE
+                        | franca_comment ENUMERATION identifier LBRACE enumeration_value_list RBRACE'''
+        if len(p) == 6:
+            p[0] = franca_ast.Enum(p[2], p[4], None)
+        elif len(p) == 7:
+            p[0] = franca_ast.Enum(p[3], p[5], p[1])
+            
+        p[0].show()
 
     def p_enumeration_value_list(self, p):
         '''enumeration_value_list : enumeration_value
                                 | enumeration_value enumeration_value_list'''
             
-        print("found enumeration_value_list")    
-        p[0] = p[0]
+        if len(p) == 2:
+            p[0] = franca_ast.EnumeratorList([p[1]])
+        elif len(p) == 3:
+            p[2].enumerators.append(p[1])
+            p[0] = p[2]
 
     def p_enumeration_value(self, p):
-        '''enumeration_value : ID EQUALS INT_CONST_DEC
-                            | FRANCA_COMMENT ID EQUALS INT_CONST_DEC
-                            | ID
-                            | FRANCA_COMMENT ID'''
-        print("found enumeration_value")
-        p[0] = p[0]
+        '''enumeration_value : identifier EQUALS const_int
+                            | franca_comment identifier EQUALS const_int
+                            | identifier
+                            | franca_comment identifier'''
+        if len(p) == 2:
+            p[0] = franca_ast.Enumerator(p[1], None, None)
+        elif len(p) == 3:
+            p[0] = franca_ast.Enumerator(p[2], None, p[1])
+        elif len(p) == 4:
+            p[0] = franca_ast.Enumerator(p[1], p[3], None)
+        elif len(p) == 5:
+            p[0] = franca_ast.Enumerator(p[2], p[4], p[1])
 
     def p_franca_comment(self, p):
         '''franca_comment : FRANCA_COMMENT'''
@@ -199,19 +206,25 @@ class FidlParser(object):
             p[0] = franca_ast.PackageIdentifier(str(p[1]))
 
     def p_version(self, p):
-        '''version : VERSION LBRACE MAJOR INT_CONST_OCT MINOR INT_CONST_OCT RBRACE'''
+        '''version : VERSION LBRACE MAJOR const_int MINOR const_int RBRACE'''
         p[0] = franca_ast.Version(p[4], p[6])
-        p[0].show()
+
+    def p_integer_constant(self, p):
+        '''const_int : INT_CONST_DEC 
+                    | INT_CONST_OCT 
+                    | INT_CONST_HEX 
+                    | INT_CONST_BIN'''
+        p[0] = franca_ast.IntegerConstant(p[1])
 
     def p_error(self, p):
         print("Syntax error in input!" + str(p))
 
-parser = FidlParser()
+## Debug code used during development ##
+fidl_parser = FidlParser()
 
-test_text = """
-    enumeration { Int32 a }
-    enumeration { Int32 b }
-"""
+input_text = '' 
+for line in sys.stdin: 
+    input_text += line 
 
-#parser.parse(test_text)
-parser.parse(input_text)
+fidl_parser.parse(input_text)
+## Debug code used during development ##
