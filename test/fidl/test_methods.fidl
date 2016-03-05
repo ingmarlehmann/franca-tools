@@ -1,0 +1,54 @@
+package org.franca_parser.test
+
+interface TestMethods
+{
+    version
+    {
+        major 0
+        minor 1
+    }
+
+    method Add
+    {
+        in
+        {
+            Int32 operand_a
+            Int32 operand_b
+        }
+        out
+        {
+            Int32 result
+        }
+    }
+
+    broadcast MySignal
+    {
+        out
+        {
+            Int32 sig_value
+        }
+    }
+
+    broadcast MySelectiveSignal selective
+    {
+        out
+        {
+            Int32 sig_value
+        }
+    }
+
+    <** @description: This comment belongs to the method below **>
+    method CommentedMethod
+    {
+        in
+        {
+            <** @description: This comment belongs to 'param_a' **>
+            Int32 param_a
+        }
+        out
+        {
+            <** @description: This comment belongs to 'result' **>
+            Int32 result
+        }
+    }
+}

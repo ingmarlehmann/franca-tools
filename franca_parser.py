@@ -41,8 +41,7 @@ class FidlParser(object):
         p[0] = p[0]
 
     def p_document_root_object(self, p):
-        '''document_root_object : interface
-                                | enumeration'''
+        '''document_root_object : interface''' ## TODO: add typeCollection support
         p[0] = p[0]
    
     def p_import_statement_list(self, p):
@@ -66,6 +65,7 @@ class FidlParser(object):
                 | method interface_member_list'''
 
         p[0] = p[1]
+        p[0].show()
 
     def p_enumeration(self, p):
         '''enumeration : ENUMERATION identifier LBRACE enumeration_value_list RBRACE
@@ -74,8 +74,6 @@ class FidlParser(object):
             p[0] = franca_ast.Enum(p[2], p[4], None)
         elif len(p) == 7:
             p[0] = franca_ast.Enum(p[3], p[5], p[1])
-            
-        p[0].show()
 
     def p_enumeration_value_list(self, p):
         '''enumeration_value_list : enumeration_value
@@ -113,6 +111,22 @@ class FidlParser(object):
         elif len(p) == 7:
             p[0] = franca_ast.Method(p[3], p[1], p[5])
 
+    def p_broadcast_method(self, p):
+        '''method : BROADCAST identifier LBRACE method_body RBRACE
+                    | franca_comment BROADCAST identifier LBRACE method_body RBRACE'''
+        if len(p) == 6:
+            p[0] = franca_ast.Method(p[2], None, p[4], False, True)
+        elif len(p) == 7:
+            p[0] = franca_ast.Method(p[3], p[1], p[5], False, True)
+    
+    def p_selective_broadcast_method(self, p): # TODO: only allow method_out_arguments in body
+        '''method : BROADCAST identifier SELECTIVE LBRACE method_body RBRACE
+                    | franca_comment BROADCAST identifier SELECTIVE LBRACE method_body RBRACE'''
+        if len(p) == 7:
+            p[0] = franca_ast.Method(p[2], None, p[5], True, True)
+        elif len(p) == 8:
+            p[0] = franca_ast.Method(p[3], p[1], p[6], True, True)
+
     def p_method_body_1(self, p):
         '''method_body : method_in_arguments
                         | method_in_arguments method_out_arguments'''
@@ -147,8 +161,12 @@ class FidlParser(object):
             p[0] = franca_ast.MethodArgumentList([p[1]])
 
     def p_method_argument(self, p):
-        '''method_argument : typename identifier'''
-        p[0] = franca_ast.MethodArgument(p[1], p[2])
+        '''method_argument : typename identifier
+                            | franca_comment typename identifier'''
+        if len(p) == 3:
+            p[0] = franca_ast.MethodArgument(p[1], p[2], None)
+        elif len(p) == 4:
+            p[0] = franca_ast.MethodArgument(p[2], p[3], p[1])
 
     def p_typename(self, p):
         '''typename : INT64

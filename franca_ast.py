@@ -145,10 +145,12 @@ class ImportIdentifier(Node):
     attr_names = ('import_identifier',)
 
 class Method(Node):
-    def __init__(self, name, comment, body):
+    def __init__(self, name, comment, body, is_selective=False, is_broadcast=False):
         self.name = name
         self.comment = comment
         self.body = body
+        self.is_selective = is_selective
+        self.is_broadcast = is_broadcast
 
     def children(self):
         nodelist = []
@@ -157,7 +159,7 @@ class Method(Node):
         if self.body is not None: nodelist.append(("body", self.body))
         return tuple(nodelist)
 
-    attr_names = ()
+    attr_names = ('is_selective', 'is_broadcast',)
 
 class MethodBody(Node):
     def __init__(self, in_args, out_args):
@@ -173,14 +175,16 @@ class MethodBody(Node):
     attr_names = ()
 
 class MethodArgument(Node):
-    def __init__(self, type, name):
+    def __init__(self, type, name, comment=None):
         self.type = type
         self.name = name
+        self.comment = comment
 
     def children(self):
         nodelist = []
-        if self.name is not None: nodelist.append(("name", self.name))
         if self.type is not None: nodelist.append(("type", self.type))
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
         return tuple(nodelist)
     
     attr_names = ()

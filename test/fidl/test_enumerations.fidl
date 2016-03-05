@@ -1,0 +1,44 @@
+package org.franca_parser.test
+
+interface TestEnumerations
+{
+    version
+    {
+       major 0
+       minor 1
+    }
+
+    <** @description : This is an enumeration comment **>
+    enumeration EnumWithEnumComment {
+        kEnumA
+        kEnumB
+        kEnumC
+    }
+
+    enumeration EnumWithNoComments {
+        kEnumA
+        kEnumB
+        kEnumC
+    }
+
+    <** @description : This is an enumeration comment **>
+    enumeration EnumWithEnumCommentAndEnumeratorComment {
+        <** @description : This is an enumerator comment **>
+        kEnumA
+        kEnumB
+        kEnumC
+    }
+
+    enumeration EnumWithoutEnumCommentWithEnumeratorComment {
+        kEnumA
+        <** @description : This is an enumerator comment **>
+        kEnumB
+        kEnumC
+    }
+
+    enumeration EnumWithAssignedValues {
+        kEnumA = 5
+        kEnumB = 10
+        kEnumC = 2
+    }
+}
