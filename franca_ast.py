@@ -57,6 +57,15 @@ class Node(object):
                 showcoord=showcoord,
                 _my_node_name=child_name)
 
+class Constant(Node):
+    def __init__(self, comment):
+        self.value = value
+
+    def children(self):
+        return tuple()
+
+    attr_names = ('value',)
+
 class FrancaComment(Node):
     def __init__(self, comment):
         self.comment = comment

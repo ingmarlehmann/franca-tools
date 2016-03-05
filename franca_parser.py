@@ -160,7 +160,11 @@ class FidlParser(object):
                     | BYTEBUFFER
         '''
         p[0] = franca_ast.Typename(p[1])
-    
+   
+    # def p_constant(self, p):
+        # '''constant : ID typename EQUALS expression'''
+        # p[0] = franca_ast.Constant(p[4])
+
     def p_identifier(self, p):
         '''identifier : ID'''
         p[0] = franca_ast.ID(p[1])
@@ -193,14 +197,6 @@ class FidlParser(object):
             p[0] = p[1]
         else:
             p[0] = franca_ast.PackageIdentifier(str(p[1]))
-
-    # LexToken(VERSION,'version',9,790)
-    # LexToken(LBRACE,'{',9,798)
-    # LexToken(MAJOR,'major',10,809)
-    # LexToken(INT_CONST_OCT,'0',10,815)
-    # LexToken(MINOR,'minor',11,826)
-    # LexToken(INT_CONST_OCT,'0',11,832)
-    # LexToken(RBRACE,'}',12,839)
 
     def p_version(self, p):
         '''version : VERSION LBRACE MAJOR INT_CONST_OCT MINOR INT_CONST_OCT RBRACE'''
