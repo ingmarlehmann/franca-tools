@@ -51,4 +51,12 @@ interface TestMethods
             Int32 result
         }
     }
+
+    method FireAndForget fireAndForget
+    {
+        in 
+        {
+            Int32 param_a
+        }
+    }
 }

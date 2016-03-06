@@ -107,25 +107,33 @@ class FidlParser(object):
         '''method : METHOD identifier LBRACE method_body RBRACE
                     | franca_comment METHOD identifier LBRACE method_body RBRACE'''
         if len(p) == 6:
-            p[0] = franca_ast.Method(p[2], None, p[4])
+            p[0] = franca_ast.Method(p[2], None, p[4], False)
         elif len(p) == 7:
-            p[0] = franca_ast.Method(p[3], p[1], p[5])
+            p[0] = franca_ast.Method(p[3], p[1], p[5], False)
+    
+    def p_fire_and_forget_method(self, p): 
+        '''method : METHOD identifier FIREANDFORGET LBRACE method_in_arguments RBRACE
+                    | franca_comment METHOD identifier FIREANDFORGET LBRACE method_in_arguments RBRACE'''
+        if len(p) == 7:
+            p[0] = franca_ast.Method(p[2], None, p[5], True)
+        elif len(p) == 8:
+            p[0] = franca_ast.Method(p[3], p[1], p[6], True)
 
     def p_broadcast_method(self, p):
-        '''method : BROADCAST identifier LBRACE method_body RBRACE
-                    | franca_comment BROADCAST identifier LBRACE method_body RBRACE'''
+        '''method : BROADCAST identifier LBRACE method_out_arguments RBRACE
+                    | franca_comment BROADCAST identifier LBRACE method_out_arguments RBRACE'''
         if len(p) == 6:
-            p[0] = franca_ast.Method(p[2], None, p[4], False, True)
+            p[0] = franca_ast.BroadcastMethod(p[2], None, p[4], False)
         elif len(p) == 7:
-            p[0] = franca_ast.Method(p[3], p[1], p[5], False, True)
+            p[0] = franca_ast.BroadcastMethod(p[3], p[1], p[5], False)
     
-    def p_selective_broadcast_method(self, p): # TODO: only allow method_out_arguments in body
+    def p_selective_broadcast_method(self, p):
         '''method : BROADCAST identifier SELECTIVE LBRACE method_body RBRACE
                     | franca_comment BROADCAST identifier SELECTIVE LBRACE method_body RBRACE'''
         if len(p) == 7:
-            p[0] = franca_ast.Method(p[2], None, p[5], True, True)
+            p[0] = franca_ast.BroadcastMethod(p[2], None, p[5], True)
         elif len(p) == 8:
-            p[0] = franca_ast.Method(p[3], p[1], p[6], True, True)
+            p[0] = franca_ast.BroadcastMethod(p[3], p[1], p[6], True)
 
     def p_method_body_1(self, p):
         '''method_body : method_in_arguments

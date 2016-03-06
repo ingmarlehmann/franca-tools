@@ -45,7 +45,7 @@ class FidlLexer(object):
         ## Reserved keywords
         ##
         keywords = (
-            'IMPORT','FROM','VERSION','BROADCAST','SELECTIVE',
+            'IMPORT','FROM','VERSION','BROADCAST','SELECTIVE','FIREANDFORGET',
             'IN','OUT','MAJOR','MINOR','PACKAGE','METHOD','EXTENDS','POLYMORPHIC', 
             'ENUMERATION','STRUCT','UNION','MAP','TYPECOLLECTION',
             'TYPEDEF','IS','TO','INTERFACE','CONST','ARRAY','OF',
@@ -59,6 +59,8 @@ class FidlLexer(object):
         for keyword in keywords:
             if keyword == 'TYPECOLLECTION':
                 keyword_map['typeCollection'] = keyword
+            elif keyword == 'FIREANDFORGET':
+                keyword_map['fireAndForget'] = keyword
             elif keyword == 'INTEGER':
                 keyword_map['Integer'] = keyword
             elif keyword == 'UINT64':

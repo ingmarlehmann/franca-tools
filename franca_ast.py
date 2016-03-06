@@ -57,6 +57,22 @@ class Node(object):
                 showcoord=showcoord,
                 _my_node_name=child_name)
 
+class BroadcastMethod(Node):
+    def __init__(self, name, comment, out_args, is_selective=False):
+        self.name = name
+        self.comment = comment
+        self.out_args = out_args
+        self.is_selective = is_selective
+
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        if self.out_args is not None: nodelist.append(("out_args", self.out_args))
+        return tuple(nodelist)
+
+    attr_names = ('is_selective',)
+
 class Constant(Node):
     def __init__(self, comment):
         self.value = value
@@ -145,12 +161,11 @@ class ImportIdentifier(Node):
     attr_names = ('import_identifier',)
 
 class Method(Node):
-    def __init__(self, name, comment, body, is_selective=False, is_broadcast=False):
+    def __init__(self, name, comment, body, is_fire_and_forget=False):
         self.name = name
         self.comment = comment
         self.body = body
-        self.is_selective = is_selective
-        self.is_broadcast = is_broadcast
+        self.is_fire_and_forget = is_fire_and_forget
 
     def children(self):
         nodelist = []
@@ -159,7 +174,7 @@ class Method(Node):
         if self.body is not None: nodelist.append(("body", self.body))
         return tuple(nodelist)
 
-    attr_names = ('is_selective', 'is_broadcast',)
+    attr_names = ('is_fire_and_forget',)
 
 class MethodBody(Node):
     def __init__(self, in_args, out_args):
