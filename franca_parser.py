@@ -54,8 +54,8 @@ class FidlParser(object):
         p[0] = p[0]
 
     def p_interface(self, p):
-        '''interface : INTERFACE identifier LBRACE version interface_member_list RBRACE
-                        | franca_comment INTERFACE identifier LBRACE version interface_member_list RBRACE'''
+        '''interface : INTERFACE identifier LBRACE interface_member_list RBRACE
+                        | franca_comment INTERFACE identifier LBRACE interface_member_list RBRACE'''
         p[0] = p[0]
 
     def p_interface_member_list(self, p):
@@ -64,7 +64,9 @@ class FidlParser(object):
                 | method
                 | method interface_member_list
                 | attribute
-                | attribute interface_member_list'''
+                | attribute interface_member_list
+                | version
+                | version interface_member_list'''
 
         p[0] = p[1]
         p[0].show() # useful during development, removeme later!

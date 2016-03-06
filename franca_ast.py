@@ -286,7 +286,10 @@ class Version(Node):
         self.minor = minor
 
     def children(self):
-        return tuple()
+        nodelist = []
+        if self.major is not None: nodelist.append(("major", self.major))
+        if self.minor is not None: nodelist.append(("minor", self.minor))
+        return tuple(nodelist)
 
-    attr_names = ('major','minor',)
+    attr_names = ()
 
