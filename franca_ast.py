@@ -57,6 +57,20 @@ class Node(object):
                 showcoord=showcoord,
                 _my_node_name=child_name)
 
+class ArrayTypeDeclaration(Node):
+    def __init__(self, typename, type, dimension):
+        self.typename = typename
+        self.type = type
+        self.dimension = dimension
+
+    def children(self):
+        nodelist = []
+        if self.type is not None: nodelist.append(("type", self.type))
+        if self.typename is not None: nodelist.append(("typename", self.typename))
+        return tuple(nodelist)
+
+    attr_names = ('dimension',)
+
 class Attribute(Node):
     def __init__(self, typename, name):
         self.typename = typename

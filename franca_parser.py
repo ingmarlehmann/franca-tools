@@ -66,7 +66,9 @@ class FidlParser(object):
                 | attribute
                 | attribute interface_member_list
                 | version
-                | version interface_member_list'''
+                | version interface_member_list
+                | explicit_array_type_decl
+                | explicit_array_type_decl interface_member_list'''
 
         p[0] = p[1]
         p[0].show() # useful during development, removeme later!
@@ -74,6 +76,19 @@ class FidlParser(object):
     def p_attribute(self, p):
         '''attribute : ATTRIBUTE typename identifier'''
         p[0] = franca_ast.Attribute(p[2], p[3])
+
+    # def p_array(self, p):
+        # '''array_type_decl : implicit_array_type_decl
+                # | explicit_array_type_decl'''
+        # p[0] = p[1]
+
+    def p_explicit_array_decl(self, p): # todo, support multiple dimensions (array of array type)
+        '''explicit_array_type_decl : ARRAY identifier OF typename'''
+        p[0] = franca_ast.ArrayTypeDeclaration(p[2], p[4], 1)
+
+    def p_implicit_array_decl(self, p):
+        '''implicit_array_type_decl : typename LBRACKET RBRACKET'''
+        p[0] = franca_ast.ArrayTypeDeclaration(None, p[1], 1)
 
     def p_enumeration(self, p):
         '''enumeration : ENUMERATION identifier LBRACE enumeration_value_list RBRACE
@@ -206,6 +221,10 @@ class FidlParser(object):
                     | DOUBLE
                     | BYTEBUFFER
         '''
+        p[0] = franca_ast.Typename(p[1])
+    
+    def p_typename_3(self, p):
+        '''typename : implicit_array_type_decl'''
         p[0] = franca_ast.Typename(p[1])
    
     # def p_constant(self, p):
