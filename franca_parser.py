@@ -62,10 +62,16 @@ class FidlParser(object):
         '''interface_member_list : enumeration 
                 | enumeration interface_member_list
                 | method
-                | method interface_member_list'''
+                | method interface_member_list
+                | attribute
+                | attribute interface_member_list'''
 
         p[0] = p[1]
-        p[0].show()
+        p[0].show() # useful during development, removeme later!
+
+    def p_attribute(self, p):
+        '''attribute : ATTRIBUTE typename identifier'''
+        p[0] = franca_ast.Attribute(p[2], p[3])
 
     def p_enumeration(self, p):
         '''enumeration : ENUMERATION identifier LBRACE enumeration_value_list RBRACE
@@ -168,7 +174,7 @@ class FidlParser(object):
         else:
             p[0] = franca_ast.MethodArgumentList([p[1]])
 
-    def p_method_argument(self, p):
+    def p_method_argument(self, p): # TODO: support non POD types (identifier identifier?)
         '''method_argument : typename identifier
                             | franca_comment typename identifier'''
         if len(p) == 3:
@@ -176,7 +182,13 @@ class FidlParser(object):
         elif len(p) == 4:
             p[0] = franca_ast.MethodArgument(p[2], p[3], p[1])
 
-    def p_typename(self, p):
+    # user defined types
+    def p_typename_1(self, p):
+        '''typename : ID'''
+        p[0] = franca_ast.Typename(p[1])
+
+    # built-in types
+    def p_typename_2(self, p):
         '''typename : INT64
                     | INT32
                     | INT16

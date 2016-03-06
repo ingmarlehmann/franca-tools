@@ -45,6 +45,7 @@ class FidlLexer(object):
         ## Reserved keywords
         ##
         keywords = (
+            'ATTRIBUTE',
             'IMPORT','FROM','VERSION','BROADCAST','SELECTIVE','FIREANDFORGET',
             'IN','OUT','MAJOR','MINOR','PACKAGE','METHOD','EXTENDS','POLYMORPHIC', 
             'ENUMERATION','STRUCT','UNION','MAP','TYPECOLLECTION',

@@ -1,0 +1,14 @@
+package org.franca_parser.test
+
+interface TestAttributes
+{
+    version
+    {
+        major 0
+        minor 1
+    }
+
+    attribute UInt64 speed
+    attribute String vehicle_name
+    attribute UserDefinedType user_defined_typed_parameter
+}

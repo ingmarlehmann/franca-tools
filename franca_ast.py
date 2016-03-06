@@ -57,6 +57,19 @@ class Node(object):
                 showcoord=showcoord,
                 _my_node_name=child_name)
 
+class Attribute(Node):
+    def __init__(self, typename, name):
+        self.typename = typename
+        self.name = name
+
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.typename is not None: nodelist.append(("typename", self.typename))
+        return tuple(nodelist)
+
+    attr_names = ()
+
 class BroadcastMethod(Node):
     def __init__(self, name, comment, out_args, is_selective=False):
         self.name = name

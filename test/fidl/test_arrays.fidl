@@ -1,0 +1,12 @@
+package org.franca_parser.test
+
+interface TestArrays
+{
+    attribute ExplicitArrayDecl an_explicit_array
+    attribute ExplicitMultiDimensionalArrayDecl an_explicit_multi_dimensional_array
+
+    attribute UInt16[] an_implicit_array
+
+    array ExplicitArrayDecl of UInt8
+    array ExplicitMultiDimensionalArrayDecl of ExplicitArrayDecl
+}
