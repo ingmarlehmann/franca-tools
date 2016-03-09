@@ -1,0 +1,12 @@
+package org.franca_parser.test
+
+interface TestStructs
+{
+    struct TestStruct
+    {
+        UInt8 an_integer
+        UInt64[] an_integer_array
+        String a_string
+        Boolean a_boolean
+    }
+}
