@@ -178,7 +178,9 @@ class FidlLexer(object):
         string_literal = '"'+string_char+'*"'
         #bad_string_literal = '"'+string_char+'*'+bad_escape+string_char+'*"'
 
-        #t_ignore = r'\s'
+        def t_WHITESPACE(self, t):
+            r'\s+'
+            pass # skip space, \r, \t, etc
        
         t_STRING_LITERAL = string_literal 
       
@@ -282,6 +284,5 @@ class FidlLexer(object):
 
         def t_error(self, t):
             msg = 'Illegal character %s' % repr(t.value[0])
+            print(msg)
             self.lexer.skip(1)
-             
-                #self._error(msg, t)

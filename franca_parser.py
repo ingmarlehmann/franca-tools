@@ -61,6 +61,8 @@ class FidlParser(object):
     def p_interface_member_list(self, p):
         '''interface_member_list : enumeration 
                 | enumeration interface_member_list
+                | struct
+                | struct interface_member_list
                 | method
                 | method interface_member_list
                 | attribute
@@ -90,6 +92,31 @@ class FidlParser(object):
         '''implicit_array_type_decl : typename LBRACKET RBRACKET'''
         p[0] = franca_ast.ArrayTypeDeclaration(None, p[1], 1)
 
+    def p_struct(self, p):
+        '''struct : STRUCT identifier LBRACE struct_member_list RBRACE
+                        | franca_comment STRUCT identifier LBRACE struct_member_list RBRACE'''
+        if len(p) == 6:
+            p[0] = franca_ast.Struct(p[2], p[4], None)
+        elif len(p) == 7:
+            p[0] = franca_ast.Struct(p[3], p[5], p[1])
+
+    def p_struct_member_list(self, p):
+        '''struct_member_list : variable_declarator 
+                            | variable_declarator struct_member_list '''
+        if len(p) == 2:
+            p[0] = franca_ast.StructMemberList([p[1]])
+        else:
+            p[2].struct_members.append(p[1])
+            p[0] = p[2]
+
+    def p_variable_declarator(self, p): 
+        '''variable_declarator : typename identifier
+                                | franca_comment typename identifier'''
+        if len(p) == 3:
+            p[0] = franca_ast.Variable(p[1], p[2], None)
+        else:
+            p[0] = franca_ast.Variable(p[2], p[3], p[1])
+    
     def p_enumeration(self, p):
         '''enumeration : ENUMERATION identifier LBRACE enumeration_value_list RBRACE
                         | franca_comment ENUMERATION identifier LBRACE enumeration_value_list RBRACE'''
@@ -227,9 +254,15 @@ class FidlParser(object):
         '''typename : implicit_array_type_decl'''
         p[0] = franca_ast.Typename(p[1])
    
-    # def p_constant(self, p):
-        # '''constant : ID typename EQUALS expression'''
+    # def p_constant_declarator(self, p):
+        # '''constant_declarator : CONST typename EQUALS expression'''
         # p[0] = franca_ast.Constant(p[4])
+
+    # def p_unary_expression(self, p):
+        # '''unary_expression : typename PLUS typename
+                            # | typename MINUS typename
+                            # | typename TIMES typename
+                            # | typename DIVIDED typename'''
 
     def p_identifier(self, p):
         '''identifier : ID'''
@@ -276,7 +309,17 @@ class FidlParser(object):
         p[0] = franca_ast.IntegerConstant(p[1])
 
     def p_error(self, p):
-        print("Syntax error in input!" + str(p))
+	# import vimpdb
+        # vimpdb.set_trace()
+
+        if p is None:
+            print "Syntax error: unexpected EOF"
+    	else:
+            print "Syntax error at line {}: unexpected token {}".format(p.lineno, p.value)
+
+        # print "state stack: " + str(self.parser.statestack) + "\n"
+        # print "sym stack: " + str(self.parser.symstack) + "\n"
+        # print "productions: " + str(self.parser.productions) + "\n"
 
 ## Debug code used during development ##
 fidl_parser = FidlParser()

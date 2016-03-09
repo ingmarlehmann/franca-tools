@@ -285,6 +285,33 @@ class PackageIdentifier(Node):
 
     attr_names = ('package_identifier',)
 
+class Struct(Node):
+    def __init__(self, name, struct_members, comment=None):
+        self.name = name
+        self.struct_members = struct_members
+        self.comment = comment
+    
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.struct_members is not None: nodelist.append(("struct_members", self.struct_members))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+
+    attr_names = ()
+
+class StructMemberList(Node):
+    def __init__(self, struct_members):
+        self.struct_members = struct_members
+
+    def children(self):
+        nodelist = []
+        for i, child in enumerate(self.struct_members or []):
+            nodelist.append(("struct members[%d]" % i, child))
+        return tuple(nodelist)
+
+    attr_names = ()
+
 class Typename(Node):
     def __init__(self, typename):
         self.typename = typename
@@ -293,6 +320,21 @@ class Typename(Node):
         return tuple()
 
     attr_names = ('typename',)
+
+class Variable(Node):
+    def __init__(self, typename, name, comment):
+        self.typename = typename
+        self.name = name
+        self.comment = comment
+
+    def children(self):
+        nodelist = []
+        if self.typename is not None: nodelist.append(("typename", self.typename))
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+
+    attr_names = ()
 
 class Version(Node):
     def __init__(self, major, minor):
