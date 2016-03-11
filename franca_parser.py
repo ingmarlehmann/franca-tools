@@ -73,7 +73,7 @@ class FidlParser(object):
             # p[2].append(p[1])
             # p[0] = p[2]
 
-    def p_complex_type_declarator(self, p):
+    def p_complex_type_declarator(self, p): # TODO: unions, maps
         '''complex_type_declarator : enumeration 
                 | struct
                 | method
@@ -84,7 +84,7 @@ class FidlParser(object):
         p[0] = p[1]
         p[0].show()
 
-    def p_attribute(self, p):
+    def p_attribute(self, p): # TODO: readonly, noSubscriptions
         '''attribute : ATTRIBUTE typename identifier'''
         p[0] = franca_ast.Attribute(p[2], p[3])
 
@@ -96,7 +96,7 @@ class FidlParser(object):
         '''implicit_array_type_decl : typename LBRACKET RBRACKET'''
         p[0] = franca_ast.ArrayTypeDeclaration(None, p[1], 1)
 
-    def p_struct(self, p):
+    def p_struct(self, p): #TODO: polymorphic structs, struct inheritance
         '''struct : STRUCT identifier LBRACE struct_member_list RBRACE
                         | franca_comment STRUCT identifier LBRACE struct_member_list RBRACE'''
         if len(p) == 6:
@@ -121,7 +121,7 @@ class FidlParser(object):
         else:
             p[0] = franca_ast.Variable(p[2], p[3], p[1])
     
-    def p_enumeration(self, p):
+    def p_enumeration(self, p): # TODO: enumeration inheritance
         '''enumeration : ENUMERATION identifier LBRACE enumeration_value_list RBRACE
                         | franca_comment ENUMERATION identifier LBRACE enumeration_value_list RBRACE'''
         if len(p) == 6:
@@ -160,7 +160,7 @@ class FidlParser(object):
         '''franca_comment : FRANCA_COMMENT'''
         p[0] = franca_ast.FrancaComment(p[1])
 
-    def p_method(self, p):
+    def p_method(self, p): # TODO: error{} declarations, error inheritance
         '''method : METHOD identifier LBRACE method_body RBRACE
                     | franca_comment METHOD identifier LBRACE method_body RBRACE'''
         if len(p) == 6:
