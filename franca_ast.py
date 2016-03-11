@@ -285,6 +285,15 @@ class PackageIdentifier(Node):
 
     attr_names = ('package_identifier',)
 
+class String(Node):
+    def __init__(self, string):
+        self.string = string
+
+    def children(self):
+        return tuple()
+
+    attr_names = ('string',)
+
 class Struct(Node):
     def __init__(self, name, struct_members, comment=None):
         self.name = name
@@ -308,6 +317,19 @@ class StructMemberList(Node):
         nodelist = []
         for i, child in enumerate(self.struct_members or []):
             nodelist.append(("struct members[%d]" % i, child))
+        return tuple(nodelist)
+
+    attr_names = ()
+
+class Typedef(Node):
+    def __init__(self, existing_type, new_type):
+        self.existing_type = existing_type
+        self.new_type = new_type
+
+    def children(self):
+        nodelist = []
+        if self.existing_type is not None: nodelist.append(("existing_type", self.existing_type))
+        if self.new_type is not None: nodelist.append(("new_type", self.new_type))
         return tuple(nodelist)
 
     attr_names = ()

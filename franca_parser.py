@@ -41,7 +41,8 @@ class FidlParser(object):
         p[0] = p[0]
 
     def p_document_root_object(self, p):
-        '''document_root_object : interface''' ## TODO: add typeCollection support
+        '''document_root_object : interface
+                                | type_collection'''
         p[0] = p[0]
    
     def p_import_statement_list(self, p):
@@ -50,39 +51,42 @@ class FidlParser(object):
         p[0] = p[0]
     
     def p_import_statement(self, p):
-        '''import_statement : IMPORT import_identifier FROM STRING_LITERAL'''
+        '''import_statement : IMPORT import_identifier FROM string'''
         p[0] = p[0]
 
     def p_interface(self, p):
-        '''interface : INTERFACE identifier LBRACE interface_member_list RBRACE
-                        | franca_comment INTERFACE identifier LBRACE interface_member_list RBRACE'''
+        '''interface : INTERFACE identifier LBRACE complex_type_declarator_list RBRACE
+                        | franca_comment INTERFACE identifier LBRACE complex_type_declarator_list RBRACE'''
         p[0] = p[0]
 
-    def p_interface_member_list(self, p):
-        '''interface_member_list : enumeration 
-                | enumeration interface_member_list
-                | struct
-                | struct interface_member_list
-                | method
-                | method interface_member_list
-                | attribute
-                | attribute interface_member_list
-                | version
-                | version interface_member_list
-                | explicit_array_type_decl
-                | explicit_array_type_decl interface_member_list'''
+    def p_type_collection(self, p):
+        '''type_collection : TYPECOLLECTION identifier LBRACE complex_type_declarator_list RBRACE
+                        | franca_comment TYPECOLLECTION identifier LBRACE complex_type_declarator_list RBRACE'''
+        p[0] = p[0]
+    
+    def p_complex_type_declarator_list(self, p):
+        '''complex_type_declarator_list : complex_type_declarator
+                                        | complex_type_declarator complex_type_declarator_list'''
+        # if len(p) == 2:
+            # p[0] = p[1]
+        # else:
+            # p[2].append(p[1])
+            # p[0] = p[2]
 
+    def p_complex_type_declarator(self, p):
+        '''complex_type_declarator : enumeration 
+                | struct
+                | method
+                | attribute
+                | version
+                | explicit_array_type_decl
+                | typedef'''
         p[0] = p[1]
-        p[0].show() # useful during development, removeme later!
+        p[0].show()
 
     def p_attribute(self, p):
         '''attribute : ATTRIBUTE typename identifier'''
         p[0] = franca_ast.Attribute(p[2], p[3])
-
-    # def p_array(self, p):
-        # '''array_type_decl : implicit_array_type_decl
-                # | explicit_array_type_decl'''
-        # p[0] = p[1]
 
     def p_explicit_array_decl(self, p): # todo, support multiple dimensions (array of array type)
         '''explicit_array_type_decl : ARRAY identifier OF typename'''
@@ -135,9 +139,12 @@ class FidlParser(object):
             p[2].enumerators.append(p[1])
             p[0] = p[2]
 
+    # TODO: Handle expressions in assignment of enum value
     def p_enumeration_value(self, p):
         '''enumeration_value : identifier EQUALS const_int
+                            | identifier EQUALS string
                             | franca_comment identifier EQUALS const_int
+                            | franca_comment identifier EQUALS string
                             | identifier
                             | franca_comment identifier'''
         if len(p) == 2:
@@ -226,6 +233,10 @@ class FidlParser(object):
         elif len(p) == 4:
             p[0] = franca_ast.MethodArgument(p[2], p[3], p[1])
 
+    def p_typedef(self, p):
+        '''typedef : TYPEDEF identifier IS typename'''
+        p[0] = franca_ast.Typedef(p[4], p[2])
+
     # user defined types
     def p_typename_1(self, p):
         '''typename : ID'''
@@ -300,6 +311,10 @@ class FidlParser(object):
     def p_version(self, p):
         '''version : VERSION LBRACE MAJOR const_int MINOR const_int RBRACE'''
         p[0] = franca_ast.Version(p[4], p[6])
+
+    def p_string(self, p):
+        '''string : STRING_LITERAL'''
+        p[0] = franca_ast.String(p[1])
 
     def p_integer_constant(self, p):
         '''const_int : INT_CONST_DEC 
