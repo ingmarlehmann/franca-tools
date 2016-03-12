@@ -1,0 +1,11 @@
+package org.franca_parser.test
+
+interface TestUnions
+{
+    union UnionOfBasicTypes
+    {
+        UInt32 an_uint
+        String a_string
+        Float a_float
+    }
+}

@@ -1,0 +1,38 @@
+<** @description: Math interface **>
+interface Math
+{
+    <** @description: Hardware acceleration options **>
+    enumeration Acceleration
+    {
+        kNone,
+        kSSE2,
+        kAVX
+    }
+
+    <** @description: Add value 'a' and 'b' and return the result in 'result' **>
+    method Add
+    {
+        in
+        {
+            Int32 a
+            Int32 b
+        }
+        out
+        {
+            Int32 result
+        }
+    } 
+
+    method Subtract
+    {
+        in
+        {
+            Int32 a
+            Int32 b
+        }
+        out
+        {
+            Int32 result
+        }    
+    }
+}

@@ -73,9 +73,11 @@ class FidlParser(object):
             # p[2].append(p[1])
             # p[0] = p[2]
 
-    def p_complex_type_declarator(self, p): # TODO: unions, maps
+    def p_complex_type_declarator(self, p):
         '''complex_type_declarator : enumeration 
                 | struct
+                | map
+                | union
                 | method
                 | attribute
                 | version
@@ -96,21 +98,38 @@ class FidlParser(object):
         '''implicit_array_type_decl : typename LBRACKET RBRACKET'''
         p[0] = franca_ast.ArrayTypeDeclaration(None, p[1], 1)
 
-    def p_struct(self, p): #TODO: polymorphic structs, struct inheritance
-        '''struct : STRUCT identifier LBRACE struct_member_list RBRACE
-                        | franca_comment STRUCT identifier LBRACE struct_member_list RBRACE'''
+    def p_map(self, p):
+        '''map : MAP identifier LBRACE typename TO typename RBRACE
+                | franca_comment MAP identifier LBRACE typename TO typename RBRACE'''
+        if len(p) == 8:
+            p[0] = franca_ast.Map(p[2], p[4], p[6], None)
+        else:
+            p[0] = franca_ast.Map(p[3], p[5], p[7], p[1])
+
+    def p_union(self, p): # TODO: union inheritance
+        '''union : UNION identifier LBRACE variable_list RBRACE
+                | franca_comment UNION identifier LBRACE variable_list RBRACE'''
+        
+        if len(p) == 6:
+            p[0] = franca_ast.Union(p[2], p[4], None)
+        else: 
+            p[0] = franca_ast.Union(p[3], p[5], p[1])
+
+    def p_struct(self, p): # TODO: polymorphic structs, struct inheritance
+        '''struct : STRUCT identifier LBRACE variable_list RBRACE
+                        | franca_comment STRUCT identifier LBRACE variable_list RBRACE'''
         if len(p) == 6:
             p[0] = franca_ast.Struct(p[2], p[4], None)
         elif len(p) == 7:
             p[0] = franca_ast.Struct(p[3], p[5], p[1])
 
-    def p_struct_member_list(self, p):
-        '''struct_member_list : variable_declarator 
-                            | variable_declarator struct_member_list '''
+    def p_variable_list(self, p):
+        '''variable_list : variable_declarator 
+                            | variable_declarator variable_list'''
         if len(p) == 2:
-            p[0] = franca_ast.StructMemberList([p[1]])
+            p[0] = franca_ast.VariableList([p[1]])
         else:
-            p[2].struct_members.append(p[1])
+            p[2].members.append(p[1])
             p[0] = p[2]
 
     def p_variable_declarator(self, p): 

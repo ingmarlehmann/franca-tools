@@ -1,0 +1,20 @@
+package org.franca_parser.test
+
+interface TestMaps
+{
+    map IntegerKeyToString
+    {
+        UInt32 to String
+    }
+
+    map IntegerKeyToUserDefinedType
+    {
+        UInt32 to MyStructType
+    }
+
+    <** @description: Test comment **>
+    map UserDefinedTypeKeyToInteger
+    {
+        MyStructType to UInt32
+    }
+}

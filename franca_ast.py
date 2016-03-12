@@ -187,6 +187,23 @@ class ImportIdentifier(Node):
 
     attr_names = ('import_identifier',)
 
+class Map(Node):
+    def __init__(self, name, key_type, value_type, comment=None):
+        self.name = name
+        self.key_type = key_type
+        self.value_type = value_type
+        self.comment = comment
+
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.key_type is not None: nodelist.append(("key_type", self.key_type))
+        if self.value_type is not None: nodelist.append(("value_type", self.value_type))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+
+    attr_names = ()
+
 class Method(Node):
     def __init__(self, name, comment, body, is_fire_and_forget=False):
         self.name = name
@@ -309,18 +326,6 @@ class Struct(Node):
 
     attr_names = ()
 
-class StructMemberList(Node):
-    def __init__(self, struct_members):
-        self.struct_members = struct_members
-
-    def children(self):
-        nodelist = []
-        for i, child in enumerate(self.struct_members or []):
-            nodelist.append(("struct members[%d]" % i, child))
-        return tuple(nodelist)
-
-    attr_names = ()
-
 class Typedef(Node):
     def __init__(self, existing_type, new_type):
         self.existing_type = existing_type
@@ -343,6 +348,21 @@ class Typename(Node):
 
     attr_names = ('typename',)
 
+class Union(Node):
+    def __init__(self, name, member_list, comment=None):
+        self.name = name
+        self.member_list = member_list
+        self.comment = comment
+
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.member_list is not None: nodelist.append(("member_list", self.member_list))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+        
+    attr_names = ()
+
 class Variable(Node):
     def __init__(self, typename, name, comment):
         self.typename = typename
@@ -354,6 +374,18 @@ class Variable(Node):
         if self.typename is not None: nodelist.append(("typename", self.typename))
         if self.name is not None: nodelist.append(("name", self.name))
         if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+
+    attr_names = ()
+
+class VariableList(Node):
+    def __init__(self, members):
+        self.members = members
+
+    def children(self):
+        nodelist = []
+        for i, child in enumerate(self.members or []):
+            nodelist.append(("members[%d]" % i, child))
         return tuple(nodelist)
 
     attr_names = ()
