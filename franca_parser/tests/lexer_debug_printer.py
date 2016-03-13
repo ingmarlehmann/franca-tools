@@ -1,22 +1,25 @@
+import os
 import sys
-from franca_lexer import FidlLexer
+sys.path.insert(0, os.path.abspath('..'))
+
+from franca_parser import franca_lexer
 
 input_text = ''
 
 for line in sys.stdin:
     input_text += line
 
-class FidlLexerPrinter(object):
+class FrancaLexerDebugPrinter(object):
     def __init__(self):
-        self.fidl_lexer = FidlLexer(self.on_error)
-        self.fidl_lexer.build()
-        self.tokens = self.fidl_lexer.tokens
+        self.franca_lexer = franca_lexer.FrancaLexer(self.on_error)
+        self.franca_lexer.build()
+        self.tokens = self.franca_lexer.tokens
 
     def input(self, text):
-        self.fidl_lexer.input(text)
+        self.franca_lexer.input(text)
 
     def token(self):
-        return self.fidl_lexer.token()
+        return self.franca_lexer.token()
     
     def on_error(self, error):
         print "error: " + error
@@ -28,6 +31,6 @@ class FidlLexerPrinter(object):
                 break # no more input
             print tok
 
-lexer_printer = FidlLexerPrinter()
+lexer_printer = FrancaLexerDebugPrinter()
 lexer_printer.input(input_text)
 lexer_printer.print_tokens()

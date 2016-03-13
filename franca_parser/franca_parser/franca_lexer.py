@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
-# fidlparser: fidl_lexer.py
+# franca_parser: franca_lexer.py
 #
-# FidlLexer class: Lexer for Franca IDL (*.fidl).
+# FrancaLexer class: Lexer for Franca IDL (*.fidl).
 # 
 # This code is *heavlily* inspired by 'pycparser' by Eli Bendersky 
 # (https://github.com/eliben/pycparser/)
@@ -12,7 +12,7 @@
 from ply import lex
 from ply.lex import TOKEN
 
-class FidlLexer(object):
+class FrancaLexer(object):
         def __init__(self, error_func):
             """ Create a new Lexer.
                 error_func:

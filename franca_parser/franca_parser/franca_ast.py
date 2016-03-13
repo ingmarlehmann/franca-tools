@@ -1,3 +1,15 @@
+#------------------------------------------------------------------------------
+# franca_parser: franca_ast.py
+#
+# AST node classes: AST node classes for Franca IDL (*.fidl).
+#                   Builds an AST to be used in other tools.
+# 
+# This code is *heavlily* inspired by 'pycparser' by Eli Bendersky 
+# (https://github.com/eliben/pycparser/)
+#
+# Copyright (C) 2016, Ingmar Lehmann
+# License: BSD
+#------------------------------------------------------------------------------
 import sys
 
 class Node(object):
@@ -100,6 +112,18 @@ class BroadcastMethod(Node):
 
     attr_names = ('is_selective',)
 
+class ComplexTypeDeclarationList(Node):
+    def __init__(self, members):
+        self.members = members
+
+    def children(self):
+        nodelist = []
+        for i, child in enumerate(self.members or []):
+            nodelist.append(("members[%d]" % i, child))
+        return tuple(nodelist)
+
+    attr_names = ()
+
 class Constant(Node):
     def __init__(self, comment):
         self.value = value
@@ -169,14 +193,6 @@ class ID(Node):
 
     attr_names = ('id',)
 
-class IntegerConstant(Node):
-    def __init__(self, value):
-        self.value = value
-
-    def children(self):
-        return tuple()
-
-    attr_names = ('value',)
 
 class ImportIdentifier(Node):
     def __init__(self, import_identifier):
@@ -186,6 +202,19 @@ class ImportIdentifier(Node):
         return tuple()
 
     attr_names = ('import_identifier',)
+
+class IntegerConstant(Node):
+    def __init__(self, value):
+        self.value = value
+
+    def children(self):
+        return tuple()
+
+    attr_names = ('value',)
+
+class Interface(Node):
+    def __init__(self):
+        pass # TODO: implementme
 
 class Map(Node):
     def __init__(self, name, key_type, value_type, comment=None):
@@ -325,6 +354,10 @@ class Struct(Node):
         return tuple(nodelist)
 
     attr_names = ()
+
+class TypeCollection(Node):
+    def __init__(self):
+        pass # TODO: Implementme
 
 class Typedef(Node):
     def __init__(self, existing_type, new_type):
