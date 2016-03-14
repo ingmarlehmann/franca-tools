@@ -203,6 +203,31 @@ class ImportIdentifier(Node):
 
     attr_names = ('import_identifier',)
 
+class ImportStatement(Node):
+    def __init__(self, import_identifier, filename):
+        self.import_identifier = import_identifier
+        self.filename = filename
+
+    def children(self):
+        nodelist = []
+        if self.import_identifier is not None: nodelist.append(("import_identifier", self.import_identifier))
+        if self.filename is not None: nodelist.append(("filename", self.filename))
+        return tuple(nodelist) 
+
+    attr_names = ()
+
+class ImportStatementList(Node):
+    def __init__(self, members):
+        self.members = members
+
+    def children(self):
+        nodelist = []
+        for i, child in enumerate(self.members or []):
+            nodelist.append(("imports[%d]" % i, child))
+        return tuple(nodelist)
+
+    attr_names = ()
+
 class IntegerConstant(Node):
     def __init__(self, value):
         self.value = value

@@ -48,11 +48,16 @@ class FrancaParser(object):
     def p_import_statement_list(self, p):
         '''import_statement_list : import_statement
                                 | import_statement import_statement_list'''
-        p[0] = p[0]
+        if len(p) == 2:
+            p[0] = franca_ast.ImportStatementList([p[1]])
+        else:
+            p[2].members.append(p[1])
+            p[0] = p[2]
 
     def p_import_statement(self, p):
         '''import_statement : IMPORT import_identifier FROM string'''
-        p[0] = p[0]
+        p[0] = franca_ast.ImportStatement(p[2], p[4])
+        p[0].show()
 
     def p_interface(self, p):
         '''interface : INTERFACE identifier LBRACE complex_type_declaration_list RBRACE
