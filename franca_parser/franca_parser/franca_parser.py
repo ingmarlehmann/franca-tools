@@ -57,12 +57,22 @@ class FrancaParser(object):
     def p_interface(self, p):
         '''interface : INTERFACE identifier LBRACE complex_type_declaration_list RBRACE
                         | franca_comment INTERFACE identifier LBRACE complex_type_declaration_list RBRACE'''
-        p[0] = p[0]
+        if len(p) == 6:
+            p[0] = franca_ast.Interface(p[2], p[4], None)
+        else:
+            p[0] = franca_ast.Interface(p[3], p[5], p[1])
+        
+        p[0].show()
 
     def p_type_collection(self, p):
         '''type_collection : TYPECOLLECTION identifier LBRACE complex_type_declaration_list RBRACE
                         | franca_comment TYPECOLLECTION identifier LBRACE complex_type_declaration_list RBRACE'''
-        p[0] = p[0]
+        if len(p) == 6:
+            p[0] = franca_ast.TypeCollection(p[2], p[4], None)
+        else:
+            p[0] = franca_ast.TypeCollection(p[3], p[5], p[1])
+
+        p[0].show()
     
     def p_complex_type_declaration_list(self, p):
         '''complex_type_declaration_list : complex_type_declaration
@@ -84,7 +94,6 @@ class FrancaParser(object):
                                     | explicit_array_type_declaration
                                     | typedef'''
         p[0] = p[1]
-        p[0].show()
 
     def p_attribute_declaration(self, p): # TODO: readonly, noSubscriptions
         '''attribute_declaration : ATTRIBUTE typename identifier'''

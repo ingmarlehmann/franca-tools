@@ -213,8 +213,19 @@ class IntegerConstant(Node):
     attr_names = ('value',)
 
 class Interface(Node):
-    def __init__(self):
-        pass # TODO: implementme
+    def __init__(self, name, members, comment=None):
+        self.name = name
+        self.members = members
+        self.comment = comment
+
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.members is not None: nodelist.append(("members", self.members))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+
+    attr_names = ()
 
 class Map(Node):
     def __init__(self, name, key_type, value_type, comment=None):
@@ -356,8 +367,19 @@ class Struct(Node):
     attr_names = ()
 
 class TypeCollection(Node):
-    def __init__(self):
-        pass # TODO: Implementme
+    def __init__(self, name, members, comment=None):
+        self.name = name
+        self.members = members
+        self.comment = comment
+
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.members is not None: nodelist.append(("members", self.members))
+        if self.comment is not None: nodelist.append(("comment", self.comment))
+        return tuple(nodelist)
+
+    attr_names = ()
 
 class Typedef(Node):
     def __init__(self, existing_type, new_type):
