@@ -184,6 +184,21 @@ class FrancaComment(Node):
 
     attr_names = ('comment',)
 
+class FrancaDocument(Node):
+    def __init__(self, package_identifier, imports, child_objects):
+        self.package_identifier = package_identifier
+        self.imports = imports
+        self.child_objects = child_objects
+
+    def children(self):
+        nodelist = []
+        if self.package_identifier is not None: nodelist.append(("package_identifier", self.package_identifier))
+        if self.imports is not None: nodelist.append(("imports", self.imports))
+        if self.child_objects is not None: nodelist.append(("child_objects", self.child_objects))
+        return tuple(nodelist)
+
+    attr_names = ()
+
 class ID(Node):
     def __init__(self, id):
         self.id = id
@@ -356,7 +371,7 @@ class PackageStatement(Node):
         if self.package_identifier is not None: nodelist.append(("package_identifier", self.package_identifier))
         return tuple(nodelist)
 
-    attr_names = ('package_identifier',)
+    attr_names = ()
 
 class PackageIdentifier(Node):
     def __init__(self, package_identifier):
@@ -366,6 +381,18 @@ class PackageIdentifier(Node):
         return tuple()
 
     attr_names = ('package_identifier',)
+
+class RootLevelObjectList(Node):
+    def __init__(self, root_level_objects):
+        self.members = root_level_objects
+
+    def children(self):
+        nodelist = []
+        for i, child in enumerate(self.members or []):
+            nodelist.append(("root_objects[%d]" % i, child))
+        return tuple(nodelist)
+    
+    attr_names = ()
 
 class String(Node):
     def __init__(self, string):
@@ -424,7 +451,9 @@ class Typename(Node):
         self.typename = typename
 
     def children(self):
-        return tuple()
+        nodelist = []
+        if self.typename is not None and isinstance(self.typename, Node): nodelist.append(("typename", self.typename))
+        return tuple(nodelist)
 
     attr_names = ('typename',)
 

@@ -30,20 +30,29 @@ class FrancaParser(object):
     def parse(self, text):
         return self.parser.parse(input=text,lexer=self.lexer)
 
-    def p_document(self, p):
-        '''document : package_statement import_statement_list root_level_object_list
+    def p_franca_document(self, p):
+        '''franca_document : package_statement import_statement_list root_level_object_list
                     | package_statement root_level_object_list'''
-        p[0] = p[0]
+        if len(p) == 4:
+            p[0] = franca_ast.FrancaDocument(p[1], p[2], p[3])
+        else:
+            p[0] = franca_ast.FrancaDocument(p[1], None, p[2])
+
+        p[0].show()
 
     def p_document_root_level_object_list(self, p):
         '''root_level_object_list : root_level_object 
                                 | root_level_object root_level_object_list'''
-        p[0] = p[0]
+        if len(p) == 2:
+            p[0] = franca_ast.RootLevelObjectList([p[1]])
+        else:
+            p[2].members.append(p[1])
+            p[0] = p[2]
 
     def p_root_level_object(self, p):
         '''root_level_object : interface
                             | type_collection'''
-        p[0] = p[0]
+        p[0] = p[1]
    
     def p_import_statement_list(self, p):
         '''import_statement_list : import_statement
@@ -57,7 +66,6 @@ class FrancaParser(object):
     def p_import_statement(self, p):
         '''import_statement : IMPORT import_identifier FROM string'''
         p[0] = franca_ast.ImportStatement(p[2], p[4])
-        p[0].show()
 
     def p_interface(self, p):
         '''interface : INTERFACE identifier LBRACE complex_type_declaration_list RBRACE
@@ -66,8 +74,6 @@ class FrancaParser(object):
             p[0] = franca_ast.Interface(p[2], p[4], None)
         else:
             p[0] = franca_ast.Interface(p[3], p[5], p[1])
-        
-        p[0].show()
 
     def p_type_collection(self, p):
         '''type_collection : TYPECOLLECTION identifier LBRACE complex_type_declaration_list RBRACE
